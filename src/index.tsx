@@ -1,4 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Trigonometric from "./Trigonometric/index";
-ReactDOM.render(<Trigonometric />, document.getElementById("root"));
+
+class App extends React.Component {
+	public render() {
+		return (
+			<Trigonometric />
+		);
+	}
+}
+
+
+ReactDOM.render(
+	<App />,
+	document.getElementById("root")
+);

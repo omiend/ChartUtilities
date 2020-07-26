@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { useState, useCallback } from "react";
 import styled from "@emotion/styled";
 import {
   LineChart,
@@ -12,77 +12,77 @@ import {
 import { Slider } from "rsuite";
 import "rsuite/dist/styles/rsuite-default.css";
 
-interface ChartData {
-  name: string;
-  price: number;
+interface Props {
+  values: State,
+  handleXSlider: (value: number) => void,
+  handleYSlider: (value: number) => void,
 }
 
-const data: Array<ChartData> = [
-  {
-    name: "Tier 100",
-    price: 0,
-  },
-  {
-    name: "Tier 100",
-    price: -100,
-  },
-  {
-    name: "Tier 200",
-    price: 200,
-  },
-  {
-    name: "Tier 300",
-    price: 300,
-  },
-  {
-    name: "Tier 400",
-    price: 400,
-  },
-  {
-    name: "Tier 500",
-    price: 500,
-  },
-  {
-    name: "Tier 600",
-    price: 500,
-  },
-];
+interface ChartData {
+  x: number;
+  y: number;
+}
 
-const Wrapper = styled.div``;
+interface State {
+  data: Array<ChartData>;
+}
 
-const onHandlerSlider = (value: number) => {
-  console.log(value);
+const useTrigonometric = (): Props => {
+
+  const [values, setValues] = useState<State>({
+    data: [
+      {
+        x: 0,
+        y: 0,
+      },
+      {
+        x: 100,
+        y: 100,
+      },
+      {
+        x: 1000,
+        y: 1000,
+      }
+    ]
+  });
+
+  const handleXSlider = useCallback((value: number) => {
+    console.log('handleXSlider');
+    setValues((values) => ({ ...values, x: value }));
+  }, []);
+
+  const handleYSlider = useCallback((value: number) => {
+    console.log('handleYSlider');
+    setValues((values) => ({ ...values, y: value }));
+  }, []);
+
+  return {
+    values,
+    handleXSlider,
+    handleYSlider,
+  };
 };
 
-export default class Trigonometric extends PureComponent {
-  render() {
-    return (
-      <Wrapper>
-        <LineChart
-          width={500}
-          height={300}
-          data={data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="price"
-            stroke="#8884d8"
-            activeDot={{ r: 8 }}
-          />
-        </LineChart>
-        <Slider onChange={onHandlerSlider} />
-      </Wrapper>
-    );
-  }
+const Wrapper = styled.div``;
+const Container: React.FC = () => {
+  const {
+    values,
+    handleXSlider,
+    // handleYSlider
+  } = useTrigonometric();
+  return (
+    <Wrapper>
+      <LineChart width={500} height={300} data={values.data}>
+        <CartesianGrid />
+        <XAxis dataKey="x" />
+        <YAxis dataKey="y" />
+        <Tooltip />
+        <Legend />
+        <Line dataKey="y" stroke="#8884d8" activeDot={{ r: 8 }} />
+      </LineChart>
+      <Slider onChange={handleXSlider} />
+    </Wrapper>
+  );
 }
+
+export default Container;

@@ -9,6 +9,8 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { Slider } from "rsuite";
+import "rsuite/dist/styles/rsuite-default.css";
 
 interface ChartData {
   name: string;
@@ -22,31 +24,35 @@ const data: Array<ChartData> = [
   },
   {
     name: "Tier 100",
-    price: 100,
+    price: -100,
   },
   {
-    name: "Tier 100",
+    name: "Tier 200",
     price: 200,
   },
   {
-    name: "Tier 100",
+    name: "Tier 300",
     price: 300,
   },
   {
-    name: "Tier 100",
+    name: "Tier 400",
     price: 400,
   },
   {
-    name: "Tier 100",
+    name: "Tier 500",
     price: 500,
   },
   {
-    name: "Tier 100",
+    name: "Tier 600",
     price: 500,
   },
 ];
 
 const Wrapper = styled.div``;
+
+const onHandlerSlider = (value: number) => {
+  console.log(value);
+};
 
 export default class Trigonometric extends PureComponent {
   render() {
@@ -75,6 +81,7 @@ export default class Trigonometric extends PureComponent {
             activeDot={{ r: 8 }}
           />
         </LineChart>
+        <Slider onChange={onHandlerSlider} />
       </Wrapper>
     );
   }

@@ -1,21 +1,13 @@
 import React, { useState, useCallback } from "react";
 import styled from "@emotion/styled";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from "recharts";
 import { Slider } from "rsuite";
 import "rsuite/dist/styles/rsuite-default.css";
+import { VictoryChart, VictoryLine } from "victory";
 
 interface Props {
-  values: State,
-  handleXSlider: (value: number) => void,
-  handleYSlider: (value: number) => void,
+  values: State;
+  handleXSlider: (value: number) => void;
+  handleYSlider: (value: number) => void;
 }
 
 interface ChartData {
@@ -25,10 +17,11 @@ interface ChartData {
 
 interface State {
   data: Array<ChartData>;
+  dataY: Array<ChartData>;
+  dataX: Array<ChartData>;
 }
 
 const useTrigonometric = (): Props => {
-
   const [values, setValues] = useState<State>({
     data: [
       {
@@ -36,27 +29,53 @@ const useTrigonometric = (): Props => {
         y: 0,
       },
       {
-        x: 90,
-        y: 50,
+        x: 100,
+        y: 100,
+      },
+    ],
+    dataY: [
+      {
+        x: 100,
+        y: 0,
       },
       {
         x: 100,
         y: 100,
-      }
-    ]
+      },
+    ],
+    dataX: [
+      {
+        x: 0,
+        y: 100,
+      },
+      {
+        x: 100,
+        y: 100,
+      },
+    ],
   });
 
-  const handleXSlider = useCallback((value: number) => {
-    console.log('handleXSlider');
-    // 暫定対応ｗ
-    values.data[1].x = value;
-    setValues((values) => ({ ...values }));
-  }, [values]);
+  const handleXSlider = useCallback(
+    (value: number) => {
+      values.data[1].x = value;
+      values.dataY[0].x = value;
+      values.dataY[1].x = value;
+      values.dataX[1].x = value;
+      setValues((values) => ({ ...values }));
+    },
+    [values]
+  );
 
-  const handleYSlider = useCallback((value: number) => {
-    console.log('handleYSlider');
-    setValues((values) => ({ ...values, y: value }));
-  }, []);
+  const handleYSlider = useCallback(
+    (value: number) => {
+      values.data[1].y = value;
+      values.dataX[0].y = value;
+      values.dataX[1].y = value;
+      values.dataY[1].y = value;
+      setValues((values) => ({ ...values }));
+    },
+    [values.data, values.dataX, values.dataY]
+  );
 
   return {
     values,
@@ -65,28 +84,38 @@ const useTrigonometric = (): Props => {
   };
 };
 
-const Wrapper = styled.div``;
-const Container: React.FC = () => {
-  const {
-    values,
-    handleXSlider,
-    // handleYSlider
-  } = useTrigonometric();
+const Wrapper = styled.div`
+  padding: 5rem;
+`;
 
-  console.log(values);
+const InlineBlock = styled.div`
+  height: 500px;
+  display: inline-block;
+`;
+
+const Container: React.FC = () => {
+  const { values, handleXSlider, handleYSlider } = useTrigonometric();
   return (
     <Wrapper>
-      <LineChart width={500} height={300} data={values.data}>
-        <CartesianGrid />
-        <XAxis dataKey="x" />
-        <YAxis dataKey="y" />
-        <Tooltip />
-        <Legend />
-        <Line dataKey="x" stroke="#8884d8" activeDot={{ r: 8 }} />
-      </LineChart>
-      <Slider onChange={handleXSlider} />
+      <InlineBlock>
+        <Slider
+          min={-100}
+          max={100}
+          defaultValue={-50}
+          onChange={handleYSlider}
+          vertical
+        />
+      </InlineBlock>
+      <InlineBlock>
+        <VictoryChart height={400} width={400} domain={[-100, 100]}>
+          <VictoryLine data={values.data} />
+          <VictoryLine data={values.dataY} />
+          <VictoryLine data={values.dataX} />
+        </VictoryChart>
+      </InlineBlock>
+      <Slider min={-100} max={100} defaultValue={50} onChange={handleXSlider} />
     </Wrapper>
   );
-}
+};
 
 export default Container;

@@ -36,20 +36,22 @@ const useTrigonometric = (): Props => {
         y: 0,
       },
       {
-        x: 100,
-        y: 100,
+        x: 90,
+        y: 50,
       },
       {
-        x: 1000,
-        y: 1000,
+        x: 100,
+        y: 100,
       }
     ]
   });
 
   const handleXSlider = useCallback((value: number) => {
     console.log('handleXSlider');
-    setValues((values) => ({ ...values, x: value }));
-  }, []);
+    // 暫定対応ｗ
+    values.data[1].x = value;
+    setValues((values) => ({ ...values }));
+  }, [values]);
 
   const handleYSlider = useCallback((value: number) => {
     console.log('handleYSlider');
@@ -70,6 +72,8 @@ const Container: React.FC = () => {
     handleXSlider,
     // handleYSlider
   } = useTrigonometric();
+
+  console.log(values);
   return (
     <Wrapper>
       <LineChart width={500} height={300} data={values.data}>
@@ -78,7 +82,7 @@ const Container: React.FC = () => {
         <YAxis dataKey="y" />
         <Tooltip />
         <Legend />
-        <Line dataKey="y" stroke="#8884d8" activeDot={{ r: 8 }} />
+        <Line dataKey="x" stroke="#8884d8" activeDot={{ r: 8 }} />
       </LineChart>
       <Slider onChange={handleXSlider} />
     </Wrapper>

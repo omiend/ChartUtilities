@@ -1,13 +1,12 @@
 import React, { useState, useCallback } from "react";
 import styled from "@emotion/styled";
-import { Slider } from "rsuite";
-import "rsuite/dist/styles/rsuite-default.css";
 import { VictoryChart, VictoryLine } from "victory";
+import { Slider } from "@material-ui/core";
 
 interface Props {
   values: State;
-  handleXSlider: (value: number) => void;
-  handleYSlider: (value: number) => void;
+  onXSlider: (event: React.ChangeEvent<{}>, value: number | number[]) => void;
+  onYSlider: (event: React.ChangeEvent<{}>, value: number | number[]) => void;
 }
 
 interface ChartData {
@@ -56,22 +55,38 @@ const useTrigonometric = (): Props => {
   });
 
   const handleXSlider = useCallback(
-    (value: number) => {
-      values.data[1].x = value;
-      values.dataY[0].x = value;
-      values.dataY[1].x = value;
-      values.dataX[1].x = value;
+    (event: React.ChangeEvent<{}>, value: number | number[]) => {
+      console.log(event);
+      console.log(value);
+      if (typeof value === "number") {
+        values.data[1].x = value;
+        values.dataY[0].x = value;
+        values.dataY[1].x = value;
+        values.dataX[1].x = value;
+      } else {
+        values.data[1].x = value[0];
+        values.dataY[0].x = value[0];
+        values.dataY[1].x = value[0];
+        values.dataX[1].x = value[0];
+      }
       setValues((values) => ({ ...values }));
     },
     [values]
   );
 
   const handleYSlider = useCallback(
-    (value: number) => {
-      values.data[1].y = value;
-      values.dataX[0].y = value;
-      values.dataX[1].y = value;
-      values.dataY[1].y = value;
+    (event: React.ChangeEvent<{}>, value: number | number[]) => {
+      if (typeof value === "number") {
+        values.data[1].y = value;
+        values.dataX[0].y = value;
+        values.dataX[1].y = value;
+        values.dataY[1].y = value;
+      } else {
+        values.data[1].y = value[0];
+        values.dataX[0].y = value[0];
+        values.dataX[1].y = value[0];
+        values.dataY[1].y = value[0];
+      }
       setValues((values) => ({ ...values }));
     },
     [values.data, values.dataX, values.dataY]
@@ -79,8 +94,8 @@ const useTrigonometric = (): Props => {
 
   return {
     values,
-    handleXSlider,
-    handleYSlider,
+    onXSlider: handleXSlider,
+    onYSlider: handleYSlider,
   };
 };
 
@@ -89,31 +104,62 @@ const Wrapper = styled.div`
 `;
 
 const InlineBlock = styled.div`
-  height: 500px;
   display: inline-block;
 `;
 
+const VChart = styled.div`
+  border: solid 2px #3f51b5;
+  margin: 1rem 5rem;
+`;
+
+const YSlider = styled.div`
+  height: 500px;
+`;
+
+const XSlider = styled.div`
+  margin: 5rem 5rem 0 8rem;
+`;
+
 const Container: React.FC = () => {
-  const { values, handleXSlider, handleYSlider } = useTrigonometric();
+  const { values, onXSlider, onYSlider } = useTrigonometric();
   return (
     <Wrapper>
       <InlineBlock>
-        <Slider
-          min={-100}
-          max={100}
-          defaultValue={-50}
-          onChange={handleYSlider}
-          vertical
-        />
+        <InlineBlock>
+          <YSlider>
+            <Slider
+              orientation="vertical"
+              min={-100}
+              max={100}
+              defaultValue={100}
+              aria-labelledby="discrete-slider-always"
+              step={1}
+              valueLabelDisplay="on"
+              onChange={onYSlider}
+            />
+          </YSlider>
+        </InlineBlock>
+        <InlineBlock>
+          <VChart>
+            <VictoryChart width={500} height={500} domain={[-100, 100]}>
+              <VictoryLine data={values.data} />
+              <VictoryLine data={values.dataY} />
+              <VictoryLine data={values.dataX} />
+            </VictoryChart>
+          </VChart>
+        </InlineBlock>
+        <XSlider>
+          <Slider
+            min={-100}
+            max={100}
+            defaultValue={100}
+            aria-labelledby="discrete-slider-always"
+            step={1}
+            valueLabelDisplay="on"
+            onChange={onXSlider}
+          />
+        </XSlider>
       </InlineBlock>
-      <InlineBlock>
-        <VictoryChart height={400} width={400} domain={[-100, 100]}>
-          <VictoryLine data={values.data} />
-          <VictoryLine data={values.dataY} />
-          <VictoryLine data={values.dataX} />
-        </VictoryChart>
-      </InlineBlock>
-      <Slider min={-100} max={100} defaultValue={50} onChange={handleXSlider} />
     </Wrapper>
   );
 };

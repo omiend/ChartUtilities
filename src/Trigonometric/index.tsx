@@ -1,12 +1,18 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { VictoryChart, VictoryLine } from "victory";
 import { Slider } from "@material-ui/core";
 
 interface Props {
   values: State;
-  onXSlider: (event: React.ChangeEvent<{}>, value: number | number[]) => void;
-  onYSlider: (event: React.ChangeEvent<{}>, value: number | number[]) => void;
+  onXSlider: (
+    event: React.ChangeEvent<{}>,
+    value: number | Array<number>
+  ) => void;
+  onYSlider: (
+    event: React.ChangeEvent<{}>,
+    value: number | Array<number>
+  ) => void;
 }
 
 interface ChartData {
@@ -20,7 +26,7 @@ interface State {
   dataX: Array<ChartData>;
 }
 
-const useTrigonometric = (): Props => {
+function useTrigonometric(): Props {
   const [values, setValues] = useState<State>({
     data: [
       {
@@ -55,9 +61,7 @@ const useTrigonometric = (): Props => {
   });
 
   const handleXSlider = useCallback(
-    (event: React.ChangeEvent<{}>, value: number | number[]) => {
-      console.log(event);
-      console.log(value);
+    (event: React.ChangeEvent<{}>, value: number | Array<number>) => {
       if (typeof value === "number") {
         values.data[1].x = value;
         values.dataY[0].x = value;
@@ -75,7 +79,7 @@ const useTrigonometric = (): Props => {
   );
 
   const handleYSlider = useCallback(
-    (event: React.ChangeEvent<{}>, value: number | number[]) => {
+    (event: React.ChangeEvent<{}>, value: number | Array<number>) => {
       if (typeof value === "number") {
         values.data[1].y = value;
         values.dataX[0].y = value;
@@ -97,7 +101,7 @@ const useTrigonometric = (): Props => {
     onXSlider: handleXSlider,
     onYSlider: handleYSlider,
   };
-};
+}
 
 const Wrapper = styled.div`
   padding: 5rem;
